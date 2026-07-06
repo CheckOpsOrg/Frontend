@@ -8,6 +8,11 @@ RUN npm install
 
 # Copia o código fonte e faz o build
 COPY . .
+
+# Expõe a variável do Railway no momento do Build para o Vite compilar junto com o HTML/JS
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
+
 RUN npm run build
 
 # Fase de Execução (Servidor Web NGINX)
