@@ -5,8 +5,10 @@ import api from '../api/axios';
 import { motion } from 'framer-motion';
 import { LogIn } from 'lucide-react';
 
+import logoImg from '../assets/checkops_logo.png';
+
 export default function Login() {
-  const [email, setEmail] = useState('');
+  const [cpfOrRegistration, setCpfOrRegistration] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -18,7 +20,12 @@ export default function Login() {
     setError('');
     setLoading(true);
     try {
-      const res = await api.post('/auth/login', { email, password });
+      const payload = {
+        tenantId: '11111111-1111-1111-1111-111111111111',
+        cpfOrRegistration,
+        password
+      };
+      const res = await api.post('/auth/login', payload);
       login(res.data.token);
       navigate('/');
     } catch (err) {
@@ -38,23 +45,19 @@ export default function Login() {
         style={{ padding: '48px', borderRadius: '24px', width: '100%', maxWidth: '420px' }}
       >
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-           <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginBottom: '16px' }}>
-             <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="var(--primary)"/>
-             <path d="M2 17L12 22L22 17" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-             <path d="M2 12L12 17L22 12" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-           </svg>
+           <img src={logoImg} alt="CheckOps Logo" style={{ width: '80px', height: '80px', marginBottom: '16px', objectFit: 'contain' }} />
           <h1 style={{ fontSize: '28px', fontWeight: 700 }}>Check<span style={{ color: 'var(--primary)' }}>Ops</span></h1>
           <p style={{ color: 'var(--text-muted)', marginTop: '8px' }}>Portal Administrativo</p>
         </div>
 
         <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', color: 'var(--text-muted)' }}>E-mail</label>
+            <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', color: 'var(--text-muted)' }}>Matrícula ou CPF</label>
             <input 
-              type="email" 
-              value={email} 
-              onChange={e => setEmail(e.target.value)} 
-              placeholder="admin@checkops.com"
+              type="text" 
+              value={cpfOrRegistration} 
+              onChange={e => setCpfOrRegistration(e.target.value)} 
+              placeholder="ADMIN ou 12345678900"
               style={{ width: '100%' }}
               required 
             />
