@@ -58,8 +58,10 @@ export default function Machines() {
         <table className="data-table">
           <thead>
             <tr>
-              <th>TAG</th>
-              <th>Nome</th>
+              <th>Máquina</th>
+              <th>Local</th>
+              <th>Checklists</th>
+              <th>Atividade Atual</th>
               <th>Status</th>
               <th>Ações</th>
             </tr>
@@ -71,12 +73,52 @@ export default function Machines() {
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.3, delay: i * 0.05 }}
-              >
-                <td style={{ fontWeight: 600 }}>{m.tag}</td>
-                <td>{m.name}</td>
                 <td>
-                  <span className={`badge ${m.status === 0 ? 'success' : m.status === 1 ? 'warning' : 'danger'}`}>
-                    {m.status === 0 ? 'Ativa' : m.status === 1 ? 'Manutenção' : 'Inativa'}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    {m.photoUrl ? (
+                      <img src={m.photoUrl.startsWith('http') ? m.photoUrl : `https://api-production-cbeb.up.railway.app${m.photoUrl}`} alt={m.tag} style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'cover' }} />
+                    ) : (
+                      <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: 'var(--primary)', color: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '18px' }}>
+                        {m.tag.substring(0, 2)}
+                      </div>
+                    )}
+                    <div>
+                      <div style={{ fontWeight: 600 }}>{m.tag}</div>
+                      <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{m.description || m.name}</div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div style={{ fontSize: '14px' }}>{m.location}</div>
+                </td>
+                <td>
+                  {m.canOperateWithoutChecklists ? (
+                    <span className="badge warning">Não Exigidos</span>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      <span style={{ fontSize: '12px', color: m.preOperationChecklistTemplateId ? '#22c55e' : 'var(--text-muted)' }}>
+                        {m.preOperationChecklistTemplateId ? '✓ Pré-operação' : '✗ Pré-operação'}
+                      </span>
+                      <span style={{ fontSize: '12px', color: m.postOperationChecklistTemplateId ? '#22c55e' : 'var(--text-muted)' }}>
+                        {m.postOperationChecklistTemplateId ? '✓ Pós-operação' : '✗ Pós-operação'}
+                      </span>
+                    </div>
+                  )}
+                </td>
+                <td>
+                  {m.activeOperation ? (
+                    <div>
+                      <span className="badge warning" style={{ display: 'inline-block', marginBottom: '4px' }}>Em Uso</span>
+                      <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Operador: {m.activeOperation.operatorName}</div>
+                      <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Status: {m.activeOperation.status === 'Accepted' ? 'Aceito' : m.activeOperation.status === 'InProgress' ? 'Executando' : 'Pendente'}</div>
+                    </div>
+                  ) : (
+                    <span className="badge" style={{ background: 'rgba(255,255,255,0.1)', color: '#aaa' }}>Livre</span>
+                  )}
+                </td>
+                <td>
+                  <span className={`badge ${m.active !== false ? 'success' : 'danger'}`}>
+                    {m.active !== false ? 'Ativa' : 'Inativa'}
                   </span>
                 </td>
                 <td>
@@ -128,7 +170,7 @@ export default function Machines() {
               </button>
               
               <h2 style={{ marginBottom: '8px' }}>{selectedMachine.tag}</h2>
-              <p style={{ color: 'var(--text-muted)', marginBottom: '32px' }}>{selectedMachine.name}</p>
+              <p style={{ color: 'var(--text-muted)', marginBottom: '32px' }}>{selectedMachine.description || selectedMachine.name}</p>
               
               <div style={{ background: '#fff', padding: '24px', borderRadius: '16px', display: 'inline-block', marginBottom: '32px' }}>
                 <QRCodeCanvas 
