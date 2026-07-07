@@ -69,9 +69,10 @@ export default function Operators() {
         <table className="data-table">
           <thead>
             <tr>
-              <th>Matrícula</th>
-              <th>Nome</th>
+              <th>Operador</th>
+              <th>Contato / CPF</th>
               <th>Cargo</th>
+              <th>Atividade Atual</th>
               <th>Status</th>
               <th>Ações</th>
             </tr>
@@ -84,16 +85,37 @@ export default function Operators() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.3, delay: i * 0.05 }}
               >
-                <td style={{ fontWeight: 600 }}>{o.registration}</td>
                 <td>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'var(--primary)', color: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
-                      {o.name.charAt(0)}
+                    {o.photoUrl ? (
+                      <img src={o.photoUrl.startsWith('http') ? o.photoUrl : `https://api-production-cbeb.up.railway.app${o.photoUrl}`} alt={o.name} style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} />
+                    ) : (
+                      <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--primary)', color: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '18px' }}>
+                        {o.name.charAt(0)}
+                      </div>
+                    )}
+                    <div>
+                      <div style={{ fontWeight: 600 }}>{o.name}</div>
+                      <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Matrícula: {o.registration}</div>
                     </div>
-                    {o.name}
                   </div>
                 </td>
-                <td>{o.role === 1 ? 'Operador' : 'Manutenção'}</td>
+                <td>
+                  <div style={{ fontSize: '14px' }}>{o.email}</div>
+                  <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{o.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')}</div>
+                </td>
+                <td>{o.role === 'Operator' ? 'Operador' : o.role === 'Maintenance' ? 'Manutenção' : o.role === 'Manager' ? 'Gerente' : 'Admin'}</td>
+                <td>
+                  {o.activeOperation ? (
+                    <div>
+                      <span className="badge warning" style={{ display: 'inline-block', marginBottom: '4px' }}>Em Operação</span>
+                      <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Máq: {o.activeOperation.machineTag}</div>
+                      <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Local: {o.activeOperation.location}</div>
+                    </div>
+                  ) : (
+                    <span className="badge" style={{ background: 'rgba(255,255,255,0.1)', color: '#aaa' }}>Disponível</span>
+                  )}
+                </td>
                 <td>
                   <span className={`badge ${o.active ? 'success' : 'danger'}`}>
                     {o.active ? 'Ativo' : 'Inativo'}
