@@ -22,6 +22,8 @@ export default function Tickets() {
     fetchTickets();
   }, []);
 
+
+
   const handleUpdated = () => {
     fetchTickets();
     setSelectedTicket(null);
