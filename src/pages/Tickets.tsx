@@ -65,11 +65,11 @@ export default function Tickets() {
           <thead>
             <tr>
               <th>Máquina</th>
-              <th>Descrição</th>
+              <th>Quem abriu</th>
               <th>Responsável</th>
               <th>Severidade</th>
               <th>Status</th>
-              <th>Reportado em</th>
+              <th>Data</th>
               <th>Ações</th>
             </tr>
           </thead>
@@ -81,8 +81,8 @@ export default function Tickets() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.3, delay: i * 0.05 }}
               >
-                <td style={{ fontWeight: 600 }}>{t.machineName || t.machineId}</td>
-                <td style={{ maxWidth: '200px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.description}</td>
+                <td style={{ fontWeight: 600 }}>{t.machineTag || t.machineId}</td>
+                <td>{t.reportedByName}</td>
                 <td>
                   {t.assignedToName ? (
                     <span style={{ fontWeight: 500 }}>{t.assignedToName}</span>
