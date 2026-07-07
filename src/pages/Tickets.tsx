@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../api/axios';
 import { motion } from 'framer-motion';
-import { Play, CheckCircle, Eye } from 'lucide-react';
+import { Eye } from 'lucide-react';
 import LoadingScreen from '../components/LoadingScreen';
 import TicketDetailsModal from '../components/TicketDetailsModal';
 
@@ -22,27 +22,7 @@ export default function Tickets() {
     fetchTickets();
   }, []);
 
-  const handleChangeStatus = async (id: string, newStatus: number) => {
-    try {
-      await api.put(`/tickets/${id}/status`, { status: newStatus });
-      fetchTickets();
-    } catch (err) {
-      console.error(err);
-      alert('Erro ao alterar status.');
-    }
-  };
 
-  const handleClose = async (id: string) => {
-    const notes = prompt('Digite as notas de resolução para fechar o chamado:');
-    if (notes === null) return;
-    try {
-      await api.put(`/tickets/${id}/close`, { resolution: 'Solved', notes });
-      fetchTickets();
-    } catch (err) {
-      console.error(err);
-      alert('Erro ao fechar chamado.');
-    }
-  };
 
   const handleUpdated = () => {
     fetchTickets();
