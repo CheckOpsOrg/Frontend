@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import api from '../api/axios';
 import { motion } from 'framer-motion';
-import { Play, CheckCircle } from 'lucide-react';
+import { Play, CheckCircle, Eye } from 'lucide-react';
 import LoadingScreen from '../components/LoadingScreen';
+import TicketDetailsModal from '../components/TicketDetailsModal';
 
 export default function Tickets() {
   const [loading, setLoading] = useState(true);
   const [tickets, setTickets] = useState<any[]>([]);
+  const [selectedTicket, setSelectedTicket] = useState<any>(null);
 
   const fetchTickets = () => {
     setLoading(true);
@@ -42,6 +44,11 @@ export default function Tickets() {
     }
   };
 
+  const handleUpdated = () => {
+    fetchTickets();
+    setSelectedTicket(null);
+  };
+
   if (loading && tickets.length === 0) return <LoadingScreen />;
 
   return (
@@ -59,6 +66,7 @@ export default function Tickets() {
             <tr>
               <th>Máquina</th>
               <th>Descrição</th>
+              <th>Responsável</th>
               <th>Severidade</th>
               <th>Status</th>
               <th>Reportado em</th>
@@ -74,38 +82,34 @@ export default function Tickets() {
                 transition={{ duration: 0.3, delay: i * 0.05 }}
               >
                 <td style={{ fontWeight: 600 }}>{t.machineName || t.machineId}</td>
-                <td style={{ maxWidth: '300px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.description}</td>
+                <td style={{ maxWidth: '200px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.description}</td>
                 <td>
-                  <span className={`badge ${t.severity === 0 ? 'info' : t.severity === 1 ? 'warning' : 'danger'}`}>
-                    {t.severity === 0 ? 'Baixa' : t.severity === 1 ? 'Média' : 'Alta'}
+                  {t.assignedToName ? (
+                    <span style={{ fontWeight: 500 }}>{t.assignedToName}</span>
+                  ) : (
+                    <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>Não atribuído</span>
+                  )}
+                </td>
+                <td>
+                  <span className={`badge ${t.priority === 'High' ? 'danger' : t.priority === 'Medium' ? 'warning' : 'info'}`}>
+                    {t.priority === 'High' ? 'Alta' : t.priority === 'Medium' ? 'Média' : 'Baixa'}
                   </span>
                 </td>
                 <td>
-                  <span className={`badge ${t.status === 0 ? 'warning' : t.status === 1 ? 'info' : t.status === 2 ? 'success' : 'danger'}`}>
-                    {t.status === 0 ? 'Aberto' : t.status === 1 ? 'Em Progresso' : t.status === 2 ? 'Resolvido' : 'Fechado'}
+                  <span className={`badge ${t.status === 'Resolved' || t.status === 'Cancelled' ? 'success' : 'warning'}`}>
+                    {t.status === 'Open' ? 'Aberto' : t.status === 'InProgress' ? 'Em Progresso' : t.status === 'Resolved' ? 'Resolvido' : 'Fechado'}
                   </span>
                 </td>
                 <td style={{ color: 'var(--text-muted)' }}>{new Date(t.createdAt).toLocaleDateString()}</td>
                 <td>
                   <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                    {t.status === 0 && (
-                      <button 
-                        onClick={() => handleChangeStatus(t.id, 1)}
-                        style={{ background: 'rgba(56,189,248,0.2)', color: '#38bdf8', padding: '8px 12px', borderRadius: '6px', display: 'flex', gap: '8px', alignItems: 'center' }}
-                        title="Iniciar Atendimento"
-                      >
-                        <Play size={16} />
-                      </button>
-                    )}
-                    {t.status === 1 && (
-                      <button 
-                        onClick={() => handleClose(t.id)}
-                        style={{ background: 'rgba(34,197,94,0.2)', color: '#22c55e', padding: '8px 12px', borderRadius: '6px', display: 'flex', gap: '8px', alignItems: 'center' }}
-                        title="Resolver Chamado"
-                      >
-                        <CheckCircle size={16} />
-                      </button>
-                    )}
+                    <button 
+                      onClick={() => setSelectedTicket(t)}
+                      style={{ background: 'rgba(56,189,248,0.2)', color: '#38bdf8', padding: '8px 12px', borderRadius: '6px', display: 'flex', gap: '8px', alignItems: 'center' }}
+                      title="Ver Detalhes do Chamado"
+                    >
+                      <Eye size={16} /> Detalhes
+                    </button>
                   </div>
                 </td>
               </motion.tr>
@@ -113,6 +117,14 @@ export default function Tickets() {
           </tbody>
         </table>
       </div>
+
+      {selectedTicket && (
+        <TicketDetailsModal 
+          ticket={selectedTicket} 
+          onClose={() => setSelectedTicket(null)} 
+          onUpdated={handleUpdated} 
+        />
+      )}
     </div>
   );
 }
