@@ -1,16 +1,42 @@
 import { useState, useEffect } from 'react';
 import api from '../api/axios';
 import { motion, AnimatePresence } from 'framer-motion';
-import { QrCode, Printer, X, Plus } from 'lucide-react';
+import { QrCode, Printer, X, Plus, Edit, Trash2 } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
+import LoadingScreen from '../components/LoadingScreen';
+import MachineFormModal from '../components/MachineFormModal';
 
 export default function Machines() {
+  const [loading, setLoading] = useState(true);
   const [machines, setMachines] = useState<any[]>([]);
   const [selectedMachine, setSelectedMachine] = useState<any>(null);
+  const [showForm, setShowForm] = useState(false);
+  const [editingMachine, setEditingMachine] = useState<any>(null);
+
+  const fetchMachines = () => {
+    setLoading(true);
+    api.get('/machines')
+      .then(res => setMachines(res.data))
+      .catch(err => console.error(err))
+      .finally(() => setLoading(false));
+  };
 
   useEffect(() => {
-    api.get('/machines').then(res => setMachines(res.data));
+    fetchMachines();
   }, []);
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Deseja realmente inativar/deletar esta máquina?')) return;
+    try {
+      await api.delete(`/machines/${id}`);
+      fetchMachines();
+    } catch (err) {
+      console.error(err);
+      alert('Erro ao excluir máquina.');
+    }
+  };
+
+  if (loading && machines.length === 0) return <LoadingScreen />;
 
   const handlePrint = () => {
     window.print();
@@ -23,7 +49,9 @@ export default function Machines() {
           <h1 className="page-title">Máquinas</h1>
           <p className="page-subtitle">Gerencie os equipamentos e gere os QR Codes.</p>
         </div>
-        <button className="btn-primary"><Plus size={18}/> Nova Máquina</button>
+        <button className="btn-primary" onClick={() => { setEditingMachine(null); setShowForm(true); }}>
+          <Plus size={18}/> Nova Máquina
+        </button>
       </div>
 
       <div className="glass" style={{ borderRadius: '16px', overflow: 'hidden' }}>
@@ -52,12 +80,29 @@ export default function Machines() {
                   </span>
                 </td>
                 <td>
-                  <button 
-                    onClick={() => setSelectedMachine(m)}
-                    style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', padding: '8px 12px', borderRadius: '6px', display: 'flex', gap: '8px', alignItems: 'center' }}
-                  >
-                    <QrCode size={16} /> QR Code
-                  </button>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <button 
+                      onClick={() => setSelectedMachine(m)}
+                      style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', padding: '8px 12px', borderRadius: '6px', display: 'flex', gap: '8px', alignItems: 'center' }}
+                      title="Gerar QR Code"
+                    >
+                      <QrCode size={16} />
+                    </button>
+                    <button 
+                      onClick={() => { setEditingMachine(m); setShowForm(true); }}
+                      style={{ background: 'rgba(56,189,248,0.2)', color: '#38bdf8', padding: '8px 12px', borderRadius: '6px', display: 'flex', gap: '8px', alignItems: 'center' }}
+                      title="Editar Máquina"
+                    >
+                      <Edit size={16} />
+                    </button>
+                    <button 
+                      onClick={() => handleDelete(m.id)}
+                      style={{ background: 'rgba(239,68,68,0.2)', color: 'var(--danger)', padding: '8px 12px', borderRadius: '6px', display: 'flex', gap: '8px', alignItems: 'center' }}
+                      title="Inativar Máquina"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
                 </td>
               </motion.tr>
             ))}
@@ -87,7 +132,7 @@ export default function Machines() {
               
               <div style={{ background: '#fff', padding: '24px', borderRadius: '16px', display: 'inline-block', marginBottom: '32px' }}>
                 <QRCodeCanvas 
-                  value={JSON.stringify({ Id: selectedMachine.id, Tag: selectedMachine.tag })} 
+                  value={JSON.stringify({ machine_id: selectedMachine.id, Tag: selectedMachine.tag })} 
                   size={200}
                   level="H"
                 />
@@ -98,6 +143,14 @@ export default function Machines() {
               </button>
             </motion.div>
           </div>
+        )}
+        
+        {showForm && (
+          <MachineFormModal 
+            machine={editingMachine} 
+            onClose={() => setShowForm(false)} 
+            onSaved={() => { setShowForm(false); fetchMachines(); }} 
+          />
         )}
       </AnimatePresence>
     </div>

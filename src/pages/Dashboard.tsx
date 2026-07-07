@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import api from '../api/axios';
 import { motion } from 'framer-motion';
 import { Activity, Server, Users, AlertCircle } from 'lucide-react';
+import LoadingScreen from '../components/LoadingScreen';
 
 export default function Dashboard() {
+  const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ machines: 0, operations: 0, users: 0, tickets: 0 });
 
   useEffect(() => {
@@ -23,6 +25,8 @@ export default function Dashboard() {
         });
       } catch (err) {
         console.error("Error fetching stats", err);
+      } finally {
+        setLoading(false);
       }
     };
     fetchData();
@@ -34,6 +38,8 @@ export default function Dashboard() {
     { title: 'Operadores', value: stats.users, icon: <Users size={24} color="#a855f7" />, color: '#a855f7' },
     { title: 'Chamados Abertos', value: stats.tickets, icon: <AlertCircle size={24} color="var(--danger)" />, color: 'var(--danger)' },
   ];
+
+  if (loading) return <LoadingScreen />;
 
   return (
     <div>

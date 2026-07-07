@@ -16,12 +16,12 @@ export default function Layout() {
     <div className="layout-container">
       <aside className="sidebar">
         <div className="sidebar-logo">
-           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-             <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="var(--primary)"/>
-             <path d="M2 17L12 22L22 17" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-             <path d="M2 12L12 17L22 12" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-           </svg>
-           Check<span>Ops</span>
+           <img 
+             src="/src/assets/checkops_logo.png" 
+             alt="CheckOps Logo" 
+             style={{ width: '48px', height: '48px', objectFit: 'contain', filter: 'drop-shadow(0 0 15px rgba(0, 212, 170, 0.6))' }} 
+           />
+           <span style={{ fontSize: '24px', fontWeight: 700 }}>Check<span style={{ color: 'var(--primary)' }}>Ops</span></span>
         </div>
         
         <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
