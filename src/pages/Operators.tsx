@@ -13,8 +13,8 @@ export default function Operators() {
 
   const fetchOperators = () => {
     setLoading(true);
-    api.get('/users')
-      .then(res => setOperators(res.data.filter((u: any) => u.role === 1 || u.role === 2)))
+    api.get('/users?role=1')
+      .then(res => setOperators(res.data))
       .catch(err => console.error(err))
       .finally(() => setLoading(false));
   };
