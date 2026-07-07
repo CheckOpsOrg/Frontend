@@ -20,9 +20,9 @@ export default function Layout() {
            <img 
              src={logoImg} 
              alt="CheckOps Logo" 
-             style={{ width: '64px', height: '64px', objectFit: 'contain', filter: 'drop-shadow(0 0 15px rgba(0, 212, 170, 0.6))' }} 
+             style={{ width: '48px', height: '48px', objectFit: 'contain', filter: 'drop-shadow(0 0 15px rgba(0, 212, 170, 0.6))' }} 
            />
-           <span style={{ fontSize: '32px', fontWeight: 700, letterSpacing: '1px' }}>Check<span style={{ color: 'var(--primary)' }}>Ops</span></span>
+           <span style={{ fontSize: '28px', fontWeight: 700, letterSpacing: '0.5px', color: '#fff' }}>Check<span style={{ color: 'var(--primary)' }}>Ops</span></span>
         </div>
         
         <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
