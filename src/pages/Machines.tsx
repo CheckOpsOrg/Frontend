@@ -175,7 +175,7 @@ export default function Machines() {
               
               <div style={{ background: '#fff', padding: '24px', borderRadius: '16px', display: 'inline-block', marginBottom: '32px' }}>
                 <QRCodeCanvas 
-                  value={JSON.stringify({ machine_id: selectedMachine.id, Tag: selectedMachine.tag })} 
+                  value={JSON.stringify({ machine_id: selectedMachine.id, Tag: selectedMachine.tag, hash: selectedMachine.qrCodeHash })} 
                   size={200}
                   level="H"
                 />
