@@ -8,7 +8,13 @@ export default function UserFormModal({ user, onClose, onSaved }: { user?: any, 
   const [email, setEmail] = useState(user?.email || '');
   const [cpf, setCpf] = useState(user?.cpf || '');
   const [registration, setRegistration] = useState(user?.registration || '');
-  const [role, setRole] = useState(2); // default operator
+  const [role, setRole] = useState(() => {
+    if (user?.role === 'Admin') return 0;
+    if (user?.role === 'Manager') return 1;
+    if (user?.role === 'Operator') return 2;
+    if (user?.role === 'Maintenance') return 3;
+    return 2;
+  });
   const [password, setPassword] = useState('');
   
   const [loading, setLoading] = useState(false);
@@ -19,8 +25,8 @@ export default function UserFormModal({ user, onClose, onSaved }: { user?: any, 
 
     try {
       if (user?.id) {
-        // Edit só aceita Nome e Email no backend atual
-        await api.put(`/users/${user.id}`, { name, email });
+        // Edit só aceita Nome e Email no backend atual, mas agora aceita Role!
+        await api.put(`/users/${user.id}`, { name, email, role: parseInt(role.toString()) });
       } else {
         await api.post('/users', {
           name,
@@ -68,6 +74,16 @@ export default function UserFormModal({ user, onClose, onSaved }: { user?: any, 
             <input type="email" value={email} onChange={e => setEmail(e.target.value)} style={{ width: '100%' }} required />
           </div>
 
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', color: 'var(--text-muted)' }}>Cargo</label>
+            <select value={role} onChange={e => setRole(parseInt(e.target.value))} style={{ width: '100%', padding: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', borderRadius: '8px' }}>
+              <option value={2} style={{ color: '#000' }}>Operador</option>
+              <option value={3} style={{ color: '#000' }}>Manutenção</option>
+              <option value={1} style={{ color: '#000' }}>Gerente</option>
+              <option value={0} style={{ color: '#000' }}>Admin</option>
+            </select>
+          </div>
+
           {!user?.id && (
             <>
               <div>
@@ -77,15 +93,6 @@ export default function UserFormModal({ user, onClose, onSaved }: { user?: any, 
               <div>
                 <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', color: 'var(--text-muted)' }}>Matrícula</label>
                 <input type="text" value={registration} onChange={e => setRegistration(e.target.value)} style={{ width: '100%' }} required />
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', color: 'var(--text-muted)' }}>Cargo</label>
-                <select value={role} onChange={e => setRole(parseInt(e.target.value))} style={{ width: '100%', padding: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', borderRadius: '8px' }}>
-                  <option value={2} style={{ color: '#000' }}>Operador</option>
-                  <option value={3} style={{ color: '#000' }}>Manutenção</option>
-                  <option value={1} style={{ color: '#000' }}>Gerente</option>
-                  <option value={0} style={{ color: '#000' }}>Admin</option>
-                </select>
               </div>
               <div>
                 <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', color: 'var(--text-muted)' }}>Senha Inicial</label>
