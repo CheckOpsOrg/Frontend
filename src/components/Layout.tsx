@@ -1,12 +1,15 @@
-import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Monitor, Users, Ticket, LogOut } from 'lucide-react';
+import { useState } from 'react';
+import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { LayoutDashboard, Monitor, Users, Ticket, LogOut, ChevronDown } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import logoImg from '../assets/checkops_logo.png';
 
 export default function Layout() {
   const { logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [usersOpen, setUsersOpen] = useState(location.pathname.startsWith('/users'));
 
   const handleLogout = () => {
     logout();
@@ -32,9 +35,41 @@ export default function Layout() {
           <NavLink to="/machines" className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`}>
             <Monitor size={20} /> Máquinas
           </NavLink>
-          <NavLink to="/users" className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`}>
-            <Users size={20} /> Usuários
-          </NavLink>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <button 
+              className={`nav-link ${location.pathname === '/users' ? 'active' : ''}`} 
+              onClick={() => {
+                setUsersOpen(!usersOpen);
+                navigate('/users');
+              }}
+              style={{ background: 'transparent', width: '100%', textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <Users size={20} /> Usuários
+              </div>
+              <ChevronDown size={16} style={{ transform: usersOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }} />
+            </button>
+            <AnimatePresence>
+              {usersOpen && (
+                <motion.div 
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: '4px', paddingLeft: '44px', marginTop: '4px' }}
+                >
+                  <NavLink to="/users?role=2" className={({isActive}) => `nav-link ${isActive && location.search === '?role=2' ? 'active' : ''}`} style={{ fontSize: '14px', padding: '8px 12px' }}>
+                    Operadores
+                  </NavLink>
+                  <NavLink to="/users?role=0" className={({isActive}) => `nav-link ${isActive && location.search === '?role=0' ? 'active' : ''}`} style={{ fontSize: '14px', padding: '8px 12px' }}>
+                    Administradores
+                  </NavLink>
+                  <NavLink to="/users?role=3" className={({isActive}) => `nav-link ${isActive && location.search === '?role=3' ? 'active' : ''}`} style={{ fontSize: '14px', padding: '8px 12px' }}>
+                    Mantenedores
+                  </NavLink>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
           <NavLink to="/tickets" className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`}>
             <Ticket size={20} /> Chamados
           </NavLink>

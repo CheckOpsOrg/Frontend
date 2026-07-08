@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import api from '../api/axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Edit, Trash2, KeyRound, CheckCircle, Filter } from 'lucide-react';
@@ -10,7 +11,9 @@ export default function Users() {
   const [users, setUsers] = useState<any[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingUser, setEditingUser] = useState<any>(null);
-  const [roleFilter, setRoleFilter] = useState<string>(''); // empty = all
+  
+  const [searchParams, setSearchParams] = useSearchParams();
+  const roleFilter = searchParams.get('role') || '';
 
   const fetchUsers = () => {
     setLoading(true);
@@ -70,7 +73,13 @@ export default function Users() {
             <Filter size={16} color="var(--text-muted)" />
             <select 
               value={roleFilter} 
-              onChange={e => setRoleFilter(e.target.value)}
+              onChange={e => {
+                if (e.target.value) {
+                  setSearchParams({ role: e.target.value });
+                } else {
+                  setSearchParams({});
+                }
+              }}
               style={{ background: 'transparent', border: 'none', color: '#fff', outline: 'none', padding: '8px 4px' }}
             >
               <option value="">Todos</option>

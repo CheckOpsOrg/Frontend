@@ -79,7 +79,6 @@ export default function UserFormModal({ user, onClose, onSaved }: { user?: any, 
             <select value={role} onChange={e => setRole(parseInt(e.target.value))} style={{ width: '100%', padding: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', borderRadius: '8px' }}>
               <option value={2} style={{ color: '#000' }}>Operador</option>
               <option value={3} style={{ color: '#000' }}>Manutenção</option>
-              <option value={1} style={{ color: '#000' }}>Gerente</option>
               <option value={0} style={{ color: '#000' }}>Admin</option>
             </select>
           </div>
