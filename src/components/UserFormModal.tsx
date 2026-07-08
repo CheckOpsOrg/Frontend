@@ -3,12 +3,12 @@ import api from '../api/axios';
 import { motion } from 'framer-motion';
 import { X, Save } from 'lucide-react';
 
-export default function OperatorFormModal({ operator, onClose, onSaved }: { operator?: any, onClose: () => void, onSaved: () => void }) {
-  const [name, setName] = useState(operator?.name || '');
-  const [email, setEmail] = useState(operator?.email || '');
-  const [cpf, setCpf] = useState(operator?.cpf || '');
-  const [registration, setRegistration] = useState(operator?.registration || '');
-  const [role, setRole] = useState(operator?.role || 1);
+export default function UserFormModal({ user, onClose, onSaved }: { user?: any, onClose: () => void, onSaved: () => void }) {
+  const [name, setName] = useState(user?.name || '');
+  const [email, setEmail] = useState(user?.email || '');
+  const [cpf, setCpf] = useState(user?.cpf || '');
+  const [registration, setRegistration] = useState(user?.registration || '');
+  const [role, setRole] = useState(2); // default operator
   const [password, setPassword] = useState('');
   
   const [loading, setLoading] = useState(false);
@@ -18,9 +18,9 @@ export default function OperatorFormModal({ operator, onClose, onSaved }: { oper
     setLoading(true);
 
     try {
-      if (operator?.id) {
+      if (user?.id) {
         // Edit só aceita Nome e Email no backend atual
-        await api.put(`/users/${operator.id}`, { name, email });
+        await api.put(`/users/${user.id}`, { name, email });
       } else {
         await api.post('/users', {
           name,
@@ -34,7 +34,7 @@ export default function OperatorFormModal({ operator, onClose, onSaved }: { oper
       onSaved();
     } catch (err) {
       console.error(err);
-      alert('Erro ao salvar operador');
+      alert('Erro ao salvar usuário');
     } finally {
       setLoading(false);
     }
@@ -56,7 +56,7 @@ export default function OperatorFormModal({ operator, onClose, onSaved }: { oper
           <X size={24} />
         </button>
         
-        <h2 style={{ marginBottom: '24px' }}>{operator ? 'Editar Operador' : 'Novo Operador'}</h2>
+        <h2 style={{ marginBottom: '24px' }}>{user ? 'Editar Usuário' : 'Novo Usuário'}</h2>
         
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
@@ -68,7 +68,7 @@ export default function OperatorFormModal({ operator, onClose, onSaved }: { oper
             <input type="email" value={email} onChange={e => setEmail(e.target.value)} style={{ width: '100%' }} required />
           </div>
 
-          {!operator?.id && (
+          {!user?.id && (
             <>
               <div>
                 <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', color: 'var(--text-muted)' }}>CPF</label>
@@ -80,7 +80,7 @@ export default function OperatorFormModal({ operator, onClose, onSaved }: { oper
               </div>
               <div>
                 <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', color: 'var(--text-muted)' }}>Cargo</label>
-                <select value={role} onChange={e => setRole(e.target.value)} style={{ width: '100%', padding: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', borderRadius: '8px' }}>
+                <select value={role} onChange={e => setRole(parseInt(e.target.value))} style={{ width: '100%', padding: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', borderRadius: '8px' }}>
                   <option value={2} style={{ color: '#000' }}>Operador</option>
                   <option value={3} style={{ color: '#000' }}>Manutenção</option>
                   <option value={1} style={{ color: '#000' }}>Gerente</option>
@@ -95,7 +95,7 @@ export default function OperatorFormModal({ operator, onClose, onSaved }: { oper
           )}
 
           <button type="submit" className="btn-primary" style={{ width: '100%', marginTop: '16px', display: 'flex', justifyContent: 'center', gap: '8px' }} disabled={loading}>
-            <Save size={18} /> {loading ? 'Salvando...' : 'Salvar Operador'}
+            <Save size={18} /> {loading ? 'Salvando...' : 'Salvar Usuário'}
           </button>
         </form>
       </motion.div>

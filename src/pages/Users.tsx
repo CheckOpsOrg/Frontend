@@ -1,45 +1,49 @@
 import { useState, useEffect } from 'react';
 import api from '../api/axios';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Edit, Trash2, KeyRound, CheckCircle } from 'lucide-react';
+import { Plus, Edit, Trash2, KeyRound, CheckCircle, Filter } from 'lucide-react';
 import LoadingScreen from '../components/LoadingScreen';
-import OperatorFormModal from '../components/OperatorFormModal';
+import UserFormModal from '../components/UserFormModal';
 
-export default function Operators() {
+export default function Users() {
   const [loading, setLoading] = useState(true);
-  const [operators, setOperators] = useState<any[]>([]);
+  const [users, setUsers] = useState<any[]>([]);
   const [showForm, setShowForm] = useState(false);
-  const [editingOperator, setEditingOperator] = useState<any>(null);
+  const [editingUser, setEditingUser] = useState<any>(null);
+  const [roleFilter, setRoleFilter] = useState<string>(''); // empty = all
 
-  const fetchOperators = () => {
+  const fetchUsers = () => {
     setLoading(true);
-    api.get('/users?role=2')
-      .then(res => setOperators(res.data))
+    let url = '/users';
+    if (roleFilter) url += `?role=${roleFilter}`;
+    
+    api.get(url)
+      .then(res => setUsers(res.data))
       .catch(err => console.error(err))
       .finally(() => setLoading(false));
   };
 
   useEffect(() => {
-    fetchOperators();
-  }, []);
+    fetchUsers();
+  }, [roleFilter]);
 
-  const handleToggleStatus = async (op: any) => {
+  const handleToggleStatus = async (user: any) => {
     try {
-      if (op.active) {
-        if (!confirm('Deseja realmente inativar este operador?')) return;
-        await api.delete(`/users/${op.id}`);
+      if (user.active) {
+        if (!confirm('Deseja realmente inativar este usuário?')) return;
+        await api.delete(`/users/${user.id}`);
       } else {
-        await api.put(`/users/${op.id}/reactivate`);
+        await api.put(`/users/${user.id}/reactivate`);
       }
-      fetchOperators();
+      fetchUsers();
     } catch (err) {
       console.error(err);
-      alert('Erro ao alterar status do operador.');
+      alert('Erro ao alterar status do usuário.');
     }
   };
 
   const handleResetPassword = async (id: string) => {
-    const newPassword = prompt('Digite a nova senha para este operador:');
+    const newPassword = prompt('Digite a nova senha para este usuário:');
     if (!newPassword) return;
     
     try {
@@ -51,25 +55,42 @@ export default function Operators() {
     }
   };
 
-  if (loading && operators.length === 0) return <LoadingScreen />;
+  if (loading && users.length === 0) return <LoadingScreen />;
 
   return (
     <div>
-      <div className="page-header">
+      <div className="page-header" style={{ alignItems: 'flex-start' }}>
         <div>
-          <h1 className="page-title">Operadores</h1>
-          <p className="page-subtitle">Visualização e gestão da equipe de operação e manutenção.</p>
+          <h1 className="page-title">Usuários</h1>
+          <p className="page-subtitle">Visualização e gestão de acesso ao sistema (Operadores, Manutenção, Admins).</p>
         </div>
-        <button className="btn-primary" onClick={() => { setEditingOperator(null); setShowForm(true); }}>
-          <Plus size={18}/> Novo Operador
-        </button>
+        
+        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.05)', padding: '4px 12px', borderRadius: '8px' }}>
+            <Filter size={16} color="var(--text-muted)" />
+            <select 
+              value={roleFilter} 
+              onChange={e => setRoleFilter(e.target.value)}
+              style={{ background: 'transparent', border: 'none', color: '#fff', outline: 'none', padding: '8px 4px' }}
+            >
+              <option value="">Todos</option>
+              <option value="0">Admin</option>
+              <option value="2">Operador</option>
+              <option value="3">Manutenção</option>
+            </select>
+          </div>
+
+          <button className="btn-primary" onClick={() => { setEditingUser(null); setShowForm(true); }}>
+            <Plus size={18}/> Novo Usuário
+          </button>
+        </div>
       </div>
 
       <div className="glass" style={{ borderRadius: '16px', overflow: 'hidden' }}>
         <table className="data-table">
           <thead>
             <tr>
-              <th>Operador</th>
+              <th>Usuário</th>
               <th>Contato / CPF</th>
               <th>Cargo</th>
               <th>Atividade Atual</th>
@@ -78,7 +99,7 @@ export default function Operators() {
             </tr>
           </thead>
           <tbody>
-            {operators.map((o, i) => (
+            {users.map((o, i) => (
               <motion.tr 
                 key={o.id}
                 initial={{ opacity: 0, x: -10 }}
@@ -104,13 +125,16 @@ export default function Operators() {
                   <div style={{ fontSize: '14px' }}>{o.email}</div>
                   <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{o.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')}</div>
                 </td>
-                <td>{o.role === 'Operator' ? 'Operador' : o.role === 'Maintenance' ? 'Manutenção' : o.role === 'Manager' ? 'Gerente' : 'Admin'}</td>
+                <td>
+                  <span className={`badge ${o.role === 'Admin' ? 'danger' : o.role === 'Maintenance' ? 'warning' : 'success'}`}>
+                    {o.role === 'Operator' ? 'Operador' : o.role === 'Maintenance' ? 'Manutenção' : o.role === 'Manager' ? 'Gerente' : 'Admin'}
+                  </span>
+                </td>
                 <td>
                   {o.activeOperation ? (
                     <div>
                       <span className="badge warning" style={{ display: 'inline-block', marginBottom: '4px' }}>Em Operação</span>
                       <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Máq: {o.activeOperation.machineTag}</div>
-                      <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Local: {o.activeOperation.location}</div>
                     </div>
                   ) : (
                     <span className="badge" style={{ background: 'rgba(255,255,255,0.1)', color: '#aaa' }}>Disponível</span>
@@ -131,16 +155,16 @@ export default function Operators() {
                       <KeyRound size={16} />
                     </button>
                     <button 
-                      onClick={() => { setEditingOperator(o); setShowForm(true); }}
+                      onClick={() => { setEditingUser(o); setShowForm(true); }}
                       style={{ background: 'rgba(56,189,248,0.2)', color: '#38bdf8', padding: '8px 12px', borderRadius: '6px', display: 'flex', gap: '8px', alignItems: 'center' }}
-                      title="Editar Operador"
+                      title="Editar Usuário"
                     >
                       <Edit size={16} />
                     </button>
                     <button 
                       onClick={() => handleToggleStatus(o)}
                       style={{ background: o.active ? 'rgba(239,68,68,0.2)' : 'rgba(34,197,94,0.2)', color: o.active ? 'var(--danger)' : '#22c55e', padding: '8px 12px', borderRadius: '6px', display: 'flex', gap: '8px', alignItems: 'center' }}
-                      title={o.active ? "Inativar Operador" : "Reativar Operador"}
+                      title={o.active ? "Inativar Usuário" : "Reativar Usuário"}
                     >
                       {o.active ? <Trash2 size={16} /> : <CheckCircle size={16} />}
                     </button>
@@ -150,14 +174,17 @@ export default function Operators() {
             ))}
           </tbody>
         </table>
+        {users.length === 0 && !loading && (
+          <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text-muted)' }}>Nenhum usuário encontrado.</div>
+        )}
       </div>
       
       <AnimatePresence>
         {showForm && (
-          <OperatorFormModal 
-            operator={editingOperator} 
+          <UserFormModal 
+            user={editingUser} 
             onClose={() => setShowForm(false)} 
-            onSaved={() => { setShowForm(false); fetchOperators(); }} 
+            onSaved={() => { setShowForm(false); fetchUsers(); }} 
           />
         )}
       </AnimatePresence>

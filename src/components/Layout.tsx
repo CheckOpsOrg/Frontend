@@ -32,8 +32,8 @@ export default function Layout() {
           <NavLink to="/machines" className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`}>
             <Monitor size={20} /> Máquinas
           </NavLink>
-          <NavLink to="/operators" className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`}>
-            <Users size={20} /> Operadores
+          <NavLink to="/users" className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`}>
+            <Users size={20} /> Usuários
           </NavLink>
           <NavLink to="/tickets" className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`}>
             <Ticket size={20} /> Chamados

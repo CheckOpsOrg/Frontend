@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Machines from './pages/Machines';
-import Operators from './pages/Operators';
+import Users from './pages/Users';
 import Tickets from './pages/Tickets';
 import Layout from './components/Layout';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -22,7 +22,7 @@ function AppRoutes() {
       <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
         <Route index element={<Dashboard />} />
         <Route path="machines" element={<Machines />} />
-        <Route path="operators" element={<Operators />} />
+        <Route path="users" element={<Users />} />
         <Route path="tickets" element={<Tickets />} />
       </Route>
       
