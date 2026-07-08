@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Monitor, Users, Ticket, LogOut, ChevronDown } from 'lucide-react';
+import { LayoutDashboard, Monitor, Users, Ticket, LogOut, ChevronDown, ClipboardList } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import logoImg from '../assets/checkops_logo.png';
@@ -31,6 +31,9 @@ export default function Layout() {
         <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
           <NavLink to="/" className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`} end>
             <LayoutDashboard size={20} /> Dashboard
+          </NavLink>
+          <NavLink to="/operations" className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`}>
+            <ClipboardList size={20} /> Operações
           </NavLink>
           <NavLink to="/machines" className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`}>
             <Monitor size={20} /> Máquinas

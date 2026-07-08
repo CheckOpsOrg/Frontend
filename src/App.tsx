@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
+import Operations from './pages/Operations';
 import Machines from './pages/Machines';
 import Users from './pages/Users';
 import Tickets from './pages/Tickets';
@@ -21,6 +22,7 @@ function AppRoutes() {
       
       <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
         <Route index element={<Dashboard />} />
+        <Route path="operations" element={<Operations />} />
         <Route path="machines" element={<Machines />} />
         <Route path="users" element={<Users />} />
         <Route path="tickets" element={<Tickets />} />
