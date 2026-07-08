@@ -41,7 +41,7 @@ export default function Layout() {
               onClick={() => {
                 setUsersOpen(!usersOpen);
               }}
-              style={{ background: 'transparent', width: '100%', textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontFamily: 'inherit', fontSize: 'inherit', color: 'inherit' }}
+              style={{ background: 'transparent', width: '100%', textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontFamily: 'inherit', fontSize: 'inherit' }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <Users size={20} /> Usuários
@@ -74,7 +74,7 @@ export default function Layout() {
           </NavLink>
         </nav>
 
-        <button className="nav-link" style={{ background: 'transparent', width: '100%', textAlign: 'left', fontFamily: 'inherit', fontSize: 'inherit', color: 'inherit' }} onClick={handleLogout}>
+        <button className="nav-link" style={{ background: 'transparent', width: '100%', textAlign: 'left', fontFamily: 'inherit', fontSize: 'inherit' }} onClick={handleLogout}>
           <LogOut size={20} /> Sair
         </button>
       </aside>
