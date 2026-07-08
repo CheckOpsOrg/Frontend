@@ -40,7 +40,6 @@ export default function Layout() {
               className={`nav-link ${location.pathname === '/users' ? 'active' : ''}`} 
               onClick={() => {
                 setUsersOpen(!usersOpen);
-                navigate('/users');
               }}
               style={{ background: 'transparent', width: '100%', textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
             >
@@ -55,15 +54,15 @@ export default function Layout() {
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
-                  style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: '4px', paddingLeft: '44px', marginTop: '4px' }}
+                  style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: '4px', paddingLeft: '32px', marginTop: '4px' }}
                 >
-                  <NavLink to="/users?role=2" className={({isActive}) => `nav-link ${isActive && location.search === '?role=2' ? 'active' : ''}`} style={{ fontSize: '14px', padding: '8px 12px' }}>
+                  <NavLink to="/users?role=2" className={({isActive}) => `nav-link ${isActive && location.search === '?role=2' ? 'active' : ''}`}>
                     Operadores
                   </NavLink>
-                  <NavLink to="/users?role=0" className={({isActive}) => `nav-link ${isActive && location.search === '?role=0' ? 'active' : ''}`} style={{ fontSize: '14px', padding: '8px 12px' }}>
+                  <NavLink to="/users?role=0" className={({isActive}) => `nav-link ${isActive && location.search === '?role=0' ? 'active' : ''}`}>
                     Administradores
                   </NavLink>
-                  <NavLink to="/users?role=3" className={({isActive}) => `nav-link ${isActive && location.search === '?role=3' ? 'active' : ''}`} style={{ fontSize: '14px', padding: '8px 12px' }}>
+                  <NavLink to="/users?role=3" className={({isActive}) => `nav-link ${isActive && location.search === '?role=3' ? 'active' : ''}`}>
                     Mantenedores
                   </NavLink>
                 </motion.div>
